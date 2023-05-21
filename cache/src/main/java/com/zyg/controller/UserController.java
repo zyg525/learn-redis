@@ -23,7 +23,7 @@ public class UserController {
      * 发送验证码
      * @return
      */
-    @RequestMapping("/sendCode")
+    @RequestMapping("/user/sendCode")
     public Result sendAuthCode(@RequestParam("phone") String phone) {
         return userService.sendCode(phone);
     }
@@ -33,7 +33,7 @@ public class UserController {
      * @param loginFormDto
      * @return
      */
-    @RequestMapping("/loginByCode")
+    @RequestMapping("/user/loginByCode")
     public Result loginOrRegisterByCode(LoginFormDto loginFormDto) {
         return userService.loginByCode(loginFormDto);
     }
@@ -43,7 +43,7 @@ public class UserController {
      * @param loginFormDto
      * @return
      */
-    @RequestMapping("/access")
+    @RequestMapping("/user/access")
     public Result accessByToken(LoginFormDto loginFormDto) {
         return Result.ok("token访问成功");
     }

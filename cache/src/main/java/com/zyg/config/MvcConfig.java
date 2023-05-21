@@ -28,7 +28,7 @@ public class MvcConfig implements WebMvcConfigurer {
                 .addPathPatterns("/**")
                 .order(1);
         registry.addInterceptor(new LoginInterceptor(stringRedisTemplate))
-                .addPathPatterns("/access")
+                .addPathPatterns("/user/access")
                 .order(2);
     }
 }
