@@ -9,6 +9,7 @@ import com.zyg.dao.ShopMapper;
 import com.zyg.dto.Result;
 import com.zyg.entity.Shop;
 import com.zyg.service.ShopService;
+import com.zyg.utils.CacheClient;
 import com.zyg.utils.RedisConstants;
 import com.zyg.utils.RedisData;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,8 +37,11 @@ public class ShopServiceImpl implements ShopService {
     @Autowired
     StringRedisTemplate stringRedisTemplate;
 
+    @Autowired
+    CacheClient cacheClient;
+
     /**
-     * 通过缓存NULL值解决缓存穿透
+     * 查询
      * @param id
      * @return
      */
@@ -47,7 +51,15 @@ public class ShopServiceImpl implements ShopService {
         //Shop shop = queryWithMutex(id);
 
         //2、使用逻辑过期解决缓存击穿
-        Shop shop = queryWithLogicalExpire(id);
+        //Shop shop = queryWithLogicalExpire(id);
+
+        //3、通过缓存NULL解决缓存穿透-使用工具类
+        /*Shop shop = cacheClient.queryWithPassThrough(CACHE_SHOP_KEY_PREFIX, id, Shop.class, CACHE_SHOP_TTL, TimeUnit.MINUTES,
+                (ID) -> shopMapper.selectShopById(ID));*/
+
+        //4、通过逻辑过期解决缓存击穿-使用工具类
+        Shop shop = cacheClient.queryWithLogicalExpire(CACHE_SHOP_KEY_PREFIX, id, Shop.class, CACHE_SHOP_TTL, TimeUnit.MINUTES,
+                (ID) -> shopMapper.selectShopById(ID));
 
         if(shop == null) {
             return Result.fail("店铺不存在");
